@@ -17,6 +17,10 @@ Notes:
 - Distance is computed locally via haversine (straight-line). No Google API.
 - Expected columns in CSV: `id,name,latitude,longitude,price,rating` (or `review_scores_rating` in 0–100, which will be converted to 0–5).
 
+If present, the app will automatically use `data/dc-listings.csv` and `data/dc-crimes.csv`:
+- `dc-listings.csv`: InsideAirbnb full export (large). The app extracts only needed columns.
+- `dc-crimes.csv`: Must include `LATITUDE` and `LONGITUDE` (or lowercase). Crimes near each listing are counted within a selectable radius using a simple array data structure (vectorized haversine).
+
 ## Project structure
 ```
 msml606-final-project/
