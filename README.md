@@ -7,6 +7,10 @@ This is a minimal yet functional MVP to explore Washington DC Airbnb listings, f
 - Choose a destination (e.g., White House) or enter custom coordinates
 - Filter by price, rating, and max distance
 - Adjust weights for price/rating/distance to rank listings
+- Choose a simple algorithm for ranking:
+  - **Pandas sort** (default)
+  - **Top-K via heap** (min-heap data structure)
+  - **QuickSort** or **HeapSort** on in-memory pairs
 - View results on a table and a map, download ranked CSV
 
 Notes:
@@ -29,8 +33,29 @@ msml606-final-project/
 
 ## Setup
 1) Python 3.10+ recommended
-2) Install dependencies:
+
+2) Create and activate a virtual environment
+
+macOS/Linux:
 ```
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+Windows (PowerShell):
+```
+py -3 -m venv .venv
+.venv\Scripts\activate
+```
+
+To deactivate later:
+```
+deactivate
+```
+
+3) Install dependencies
+```
+pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
@@ -46,4 +71,5 @@ Then open the URL printed in your terminal (typically `http://localhost:8501`).
   - `id, name, latitude, longitude, price, rating`
   - Or `review_scores_rating` (0–100) instead of `rating`
 - Place it at `data/listings.csv` or upload via the sidebar in the app.
+
 

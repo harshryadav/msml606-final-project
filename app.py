@@ -59,9 +59,40 @@ if filtered.empty:
     st.warning("No listings match the selected filters.")
     st.stop()
 
-# Score + sort
+# Score + sort (with optional algorithm choices)
 filtered["score"] = compute_weighted_score(filtered, (w_price, w_rating, w_distance))
-filtered = filtered.sort_values("score", ascending=False)
+
+algo = st.sidebar.selectbox(
+    "Ranking algorithm",
+    ["Pandas sort (default)", "Top-K via heap", "QuickSort", "HeapSort"],
+    index=0,
+)
+
+if algo == "Pandas sort (default)":
+    filtered = filtered.sort_values("score", ascending=False)
+else:
+    # Represent as list of (score, index) pairs
+    pairs = [(float(s), int(i)) for i, s in zip(filtered.index, filtered["score"]) ]
+    if algo == "Top-K via heap":
+        from src.algorithms.heap_topk import top_k_by_score
+
+        max_k = max(1, min(100, len(pairs)))
+        k = st.sidebar.slider("Top-K", min_value=1, max_value=max_k, value=min(20, max_k))
+        topk = top_k_by_score(pairs, k)
+        idx = [i for _, i in topk]
+        filtered = filtered.loc[idx].sort_values("score", ascending=False)
+    elif algo == "QuickSort":
+        from src.algorithms.sorting import quicksort
+
+        sorted_pairs = quicksort(pairs)
+        idx = [i for _, i in sorted_pairs]
+        filtered = filtered.loc[idx]
+    elif algo == "HeapSort":
+        from src.algorithms.sorting import heap_sort
+
+        sorted_pairs = heap_sort(pairs)
+        idx = [i for _, i in sorted_pairs]
+        filtered = filtered.loc[idx]
 
 # Results table
 st.subheader("Top Results")
