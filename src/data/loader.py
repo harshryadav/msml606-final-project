@@ -44,7 +44,7 @@ def read_listings(uploaded_df: pd.DataFrame | None) -> pd.DataFrame:
     # assumed to be bad listings host won't respond
     df = df[df['number_of_reviews_ltm'] >= 1]
 
-    keep = ["id", "listing_url", "name", "latitude", "longitude", "price_num", "rating"]
+    keep = ["id", "listing_url", "name", "latitude", "longitude", "price_num", "rating", "minimum_nights", "maximum_nights"]
     df = df[[c for c in keep if c in df.columns]].dropna(subset=["latitude", "longitude", "price_num", "rating"])
 
     # removed any places costing more than $10,000 (completely unrealistic)

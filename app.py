@@ -97,6 +97,8 @@ price_range = st.sidebar.slider(
     value=(int(min_price), int(average_price)+100),
 )
 min_rating = st.sidebar.slider("Minimum rating", min_value=0.0, max_value=5.0, value=0.0, step=0.1)
+min_nights, max_nights = int(df["minimum_nights"].min()), int(df["minimum_nights"].max())
+nights = st.sidebar.slider("Number of nights", min_value=min_nights, max_value=max_nights, value=1, step=1)
 max_crimes = st.sidebar.slider(
     "Max crimes in radius",
     min_value=int(df["crime_count"].min()),
@@ -179,7 +181,7 @@ else:
 # Results table
 st.subheader("Top Results")
 st.dataframe(
-    filtered[["score", "name", "listing_url", "price_num", "rating", "distance_km", "crime_count"]].round({"price_num": 0, "rating": 2, "distance_km": 2, "score": 3}),
+    filtered[["score", "name", "listing_url", "price_num", "rating", "distance_km", "crime_count", "minimum_nights", "maximum_nights"]].round({"price_num": 0, "rating": 2, "distance_km": 2, "score": 3}),
     use_container_width=True,
     hide_index=True,
 )
