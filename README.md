@@ -1,6 +1,6 @@
 # MSML606 Final Project — DC Airbnb Rental Filter & Ranking
 
-This is a minimal yet functional MVP to explore Washington DC Airbnb listings, filter by price/rating/distance, and rank results using a simple weighted score. The app runs locally with Streamlit and uses no external APIs.
+This is a minimal yet functional MVP to explore Washington DC Airbnb listings, filter by price/rating/distance and neighborhood safety, and rank results using a simple weighted score. The app runs locally with Streamlit and uses no external APIs.
 
 ## What it does
 - Upload or use a sample listings CSV
@@ -11,6 +11,7 @@ This is a minimal yet functional MVP to explore Washington DC Airbnb listings, f
   - **Pandas sort** (default)
   - **Top-K via heap** (min-heap data structure)
   - **QuickSort** or **HeapSort** on in-memory pairs
+  - **Dijkstra (min-cost pick)**: picks a single best listing by converting score to cost and running shortest path on a tiny star graph
 - View results on a table and a map, download ranked CSV
 
 Notes:
@@ -27,12 +28,23 @@ msml606-final-project/
   app.py                  # Streamlit app
   requirements.txt        # Minimal dependencies
   data/
-    listings.csv          # Small sample so the app runs out of the box
+    dc-listings.csv       # InsideAirbnb DC (preferred if present)
+    dc-crimes.csv         # DC crimes (preferred if present)
   src/
     __init__.py
-    utils.py              # haversine + normalization helpers
-    data_loader.py        # CSV reading + cleaning
+    utils.py              # haversine + normalization
     scoring.py            # weighted score computation
+    data/
+      __init__.py
+      loader.py           # CSV reading + cleaning (listings & crimes)
+    features/
+      __init__.py
+      safety.py           # vectorized crime counts within radius
+    algorithms/
+      __init__.py
+      heap_topk.py        # Top-K using a min-heap
+      sorting.py          # QuickSort & HeapSort (educational)
+      dijkstra.py         # star-graph min-cost pick
 ```
 
 ## Setup
@@ -74,6 +86,6 @@ Then open the URL printed in your terminal (typically `http://localhost:8501`).
 - Download InsideAirbnb DC listings and export a CSV with at least:
   - `id, name, latitude, longitude, price, rating`
   - Or `review_scores_rating` (0–100) instead of `rating`
-- Place it at `data/listings.csv` or upload via the sidebar in the app.
-
+- Place it at `data/dc-listings.csv` (preferred) or upload via the sidebar in the app.
+- Crime CSV at `data/dc-crimes.csv` should include `LATITUDE` and `LONGITUDE`.
 

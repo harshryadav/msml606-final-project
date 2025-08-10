@@ -3,8 +3,8 @@ import pydeck as pdk
 import streamlit as st
 
 from src.utils import haversine_km, normalize_series
-from src.data_loader import read_listings, read_crimes
-from src.crime import compute_crime_count_near_listings
+from src.data.loader import read_listings, read_crimes
+from src.features.safety import compute_crime_count_near_listings
 from src.scoring import compute_weighted_score
 
 
