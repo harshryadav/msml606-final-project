@@ -13,7 +13,7 @@ This is project explore Washington DC Airbnb listings, filter by price/rating/di
 - View results on a table and a map, download the CSV
 
 Notes:
-- Distance is computed locally via haversine (straight-line).
+- Distance is computed locally via haversine (straight-line). The Haversine formula calculates the distance between two points given a latitude and logitude.
 - Expected columns in CSV: `id,name,latitude,longitude,price,rating` (or `review_scores_rating` in 0–100, which will be converted to 0–5).
 
 If present, the app will automatically use `data/dc-listings.csv` and `data/dc-crimes.csv`:
