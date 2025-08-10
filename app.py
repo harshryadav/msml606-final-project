@@ -136,47 +136,29 @@ if filtered.empty:
 # use the weighted score to rank the listings
 filtered["score"] = compute_weighted_score(filtered, (w_price, w_rating, w_distance))
 
-# sort the listings using different algorithms
+# sort the listings using the remaining algorithms
 algo = st.sidebar.selectbox(
     "Ranking algorithm",
-    ["Pandas sort (default)", "Top-K via heap", "QuickSort", "HeapSort", "Dijkstra (min-cost pick)"],
+    ["Top-K via heap", "HeapSort"],
     index=0,
 )
 
-if algo == "Pandas sort (default)":
-    filtered = filtered.sort_values("score", ascending=False)
-else:
-    # Represent as list of (score, index) pairs
-    pairs = [(float(s), int(i)) for i, s in zip(filtered.index, filtered["score"]) ]
-    if algo == "Top-K via heap":
-        from src.algorithms.heap_topk import top_k_by_score
+# Represent as list of (score, index) pairs
+pairs = [(float(s), int(i)) for i, s in zip(filtered.index, filtered["score"]) ]
+if algo == "Top-K via heap":
+    from src.algorithms.heap_topk import top_k_by_score
 
-        max_k = max(1, min(100, len(pairs)))
-        k = st.sidebar.slider("Top-K", min_value=1, max_value=max_k, value=min(20, max_k))
-        topk = top_k_by_score(pairs, k)
-        idx = [i for _, i in topk]
-        filtered = filtered.loc[idx].sort_values("score", ascending=False)
-    elif algo == "QuickSort":
-        from src.algorithms.sorting import quicksort
+    max_k = max(1, min(100, len(pairs)))
+    k = st.sidebar.slider("Top-K", min_value=1, max_value=max_k, value=min(20, max_k))
+    topk = top_k_by_score(pairs, k)
+    idx = [i for _, i in topk]
+    filtered = filtered.loc[idx].sort_values("score", ascending=False)
+elif algo == "HeapSort":
+    from src.algorithms.sorting import heap_sort
 
-        sorted_pairs = quicksort(pairs)
-        idx = [i for _, i in sorted_pairs]
-        filtered = filtered.loc[idx]
-    elif algo == "HeapSort":
-        from src.algorithms.sorting import heap_sort
-
-        sorted_pairs = heap_sort(pairs)
-        idx = [i for _, i in sorted_pairs]
-        filtered = filtered.loc[idx]
-    elif algo == "Dijkstra (min-cost pick)":
-        # Use Dijkstra on a star graph where edge weight is (1 - score)
-        from src.algorithms.dijkstra import choose_min_cost_index
-        costs = [1.0 - float(s) for s in filtered["score"].tolist()]
-        best_idx_rel, best_cost = choose_min_cost_index(costs)
-        if best_idx_rel >= 0:
-            best_row = filtered.iloc[[best_idx_rel]]
-            st.success("Dijkstra selected the best listing (min cost).")
-            filtered = best_row
+    sorted_pairs = heap_sort(pairs)
+    idx = [i for _, i in sorted_pairs]
+    filtered = filtered.loc[idx]
 
 # Results table
 st.subheader("Top Results")
