@@ -1,21 +1,19 @@
 # MSML606 Final Project — DC Airbnb Rental Filter & Ranking
 
-This is a minimal yet functional MVP to explore Washington DC Airbnb listings, filter by price/rating/distance and neighborhood safety, and rank results using a simple weighted score. The app runs locally with Streamlit and uses no external APIs.
+This is project explore Washington DC Airbnb listings, filter by price/rating/distance and neighborhood safety, and rank results using a simple weighted score. The app runs locally with Streamlit to help visualize the data and results.
 
 ## What it does
 - Upload or use a sample listings CSV
-- Choose a destination (e.g., White House) or enter custom coordinates
+- Choose a destination (e.g., White House)
 - Filter by price, rating, and max distance
 - Adjust weights for price/rating/distance to rank listings
 - Choose a simple algorithm for ranking:
-  - **Pandas sort** (default)
   - **Top-K via heap** (min-heap data structure)
-  - **QuickSort** or **HeapSort** on in-memory pairs
-  - **Dijkstra (min-cost pick)**: picks a single best listing by converting score to cost and running shortest path on a tiny star graph
-- View results on a table and a map, download ranked CSV
+  - **HeapSort** (descending by score)
+- View results on a table and a map, download the CSV
 
 Notes:
-- Distance is computed locally via haversine (straight-line). No Google API.
+- Distance is computed locally via haversine (straight-line).
 - Expected columns in CSV: `id,name,latitude,longitude,price,rating` (or `review_scores_rating` in 0–100, which will be converted to 0–5).
 
 If present, the app will automatically use `data/dc-listings.csv` and `data/dc-crimes.csv`:
@@ -26,39 +24,40 @@ If present, the app will automatically use `data/dc-listings.csv` and `data/dc-c
 ```
 msml606-final-project/
   app.py                  # Streamlit app
-  requirements.txt        # Minimal dependencies
+  requirements.txt        # dependencies to run application
   data/
-    dc-listings.csv       # InsideAirbnb DC (preferred if present)
-    dc-crimes.csv         # DC crimes (preferred if present)
+    dc-listings.csv       # InsideAirbnb DC dataset
+    dc-crimes.csv         # DC crimes dataset
   src/
     __init__.py
     utils.py              # haversine + normalization
     scoring.py            # weighted score computation
     data/
       __init__.py
-      loader.py           # CSV reading + cleaning (listings & crimes)
+      loader.py           # reads and cleans CSV
     features/
-      __init__.py
       safety.py           # vectorized crime counts within radius
     algorithms/
       __init__.py
       heap_topk.py        # Top-K using a min-heap
-      sorting.py          # QuickSort & HeapSort (educational)
-      dijkstra.py         # star-graph min-cost pick
+      sorting.py          # HeapSort
+    pictures/
+      Table.png           # Table visual from Streamlit UI
+      Map.png             # DC Map visual from Streamlit UI
 ```
 
 ## Setup
-1) Python 3.10+ recommended
+1) Python 3.9+ recommended
 
 2) Create and activate a virtual environment
 
-macOS/Linux:
+On macOS/Linux run the following:
 ```
 python3 -m venv .venv
 source .venv/bin/activate
 ```
 
-Windows (PowerShell):
+If on Windows (PowerShell), please run:
 ```
 py -3 -m venv .venv
 .venv\Scripts\activate
@@ -80,7 +79,7 @@ pip install -r requirements.txt
 streamlit run app.py
 ```
 
-Then open the URL printed in your terminal (typically `http://localhost:8501`).
+Then open the URL printed in your terminal (usually `http://localhost:8501`).
 
 ## Using your own data
 - Download InsideAirbnb DC listings and export a CSV with at least:
@@ -88,4 +87,23 @@ Then open the URL printed in your terminal (typically `http://localhost:8501`).
   - Or `review_scores_rating` (0–100) instead of `rating`
 - Place it at `data/dc-listings.csv` (preferred) or upload via the sidebar in the app.
 - Crime CSV at `data/dc-crimes.csv` should include `LATITUDE` and `LONGITUDE`.
+
+## Example run
+- Activate your virtual environment and install requirements (see Setup), then run:
+```
+streamlit run app.py
+```
+- In the sidebar:
+  - Destination: White House
+  - Crime radius (km): 0.5
+  - Minimum rating: 4.0
+  - Price range: leave default, or narrow as desired
+  - Max crimes in radius: increase if you see no results
+  - Max distance (km): start wide, tighten later
+  - Weights: Price 0.4, Rating 0.4, Distance 0.2
+  - Ranking algorithm: Top-K via heap, Top-K = 20 (or use HeapSort to rank all)
+
+## Example Output
+![Airbnb Table](src/pictures/Table.png)
+![Airbnb DC Map](src/pictures/Map.png)
 

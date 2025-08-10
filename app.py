@@ -38,6 +38,7 @@ presets = {
     "Custom": None,
 }
 
+# TODO: add the metro stations to the presets
 presets_metro_dc = {
     "Metro Center": (38.8983, -77.0281),
     "L'Enfant Plaza": (38.8848, -77.0210),
@@ -67,6 +68,7 @@ presets_metro_dc = {
     "McPherson Square": (38.9019, -77.0370),
     "Custom": None,
 }
+
 dest_name = st.sidebar.selectbox("Destination", list(presets.keys()), index=0)
 
 if presets[dest_name] is None:
