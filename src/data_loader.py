@@ -52,7 +52,7 @@ def read_listings(uploaded_df: pd.DataFrame | None) -> pd.DataFrame:
     df = df[[c for c in keep if c in df.columns]].dropna(subset=["latitude", "longitude", "price_num", "rating"])
 
     # removed any places costing more than $10,000 (completely unrealistic)
-    df = df[df['price_num'] <= 10000]
+    df = df[df['price_num'] >= 10000]
 
     return df.reset_index(drop=True)
 
