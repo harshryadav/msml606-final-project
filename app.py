@@ -99,7 +99,7 @@ filtered["score"] = compute_weighted_score(filtered, (w_price, w_rating, w_dista
 # sort the listings using different algorithms
 algo = st.sidebar.selectbox(
     "Ranking algorithm",
-    ["Pandas sort (default)", "Top-K via heap", "QuickSort", "HeapSort"],
+    ["Pandas sort (default)", "Top-K via heap", "QuickSort", "HeapSort", "Dijkstra (min-cost pick)"],
     index=0,
 )
 
@@ -128,6 +128,15 @@ else:
         sorted_pairs = heap_sort(pairs)
         idx = [i for _, i in sorted_pairs]
         filtered = filtered.loc[idx]
+    elif algo == "Dijkstra (min-cost pick)":
+        # Use Dijkstra on a star graph where edge weight is (1 - score)
+        from src.algorithms.dijkstra import choose_min_cost_index
+        costs = [1.0 - float(s) for s in filtered["score"].tolist()]
+        best_idx_rel, best_cost = choose_min_cost_index(costs)
+        if best_idx_rel >= 0:
+            best_row = filtered.iloc[[best_idx_rel]]
+            st.success("Dijkstra selected the best listing (min cost).")
+            filtered = best_row
 
 # Results table
 st.subheader("Top Results")
