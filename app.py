@@ -22,10 +22,55 @@ crimes_df = read_crimes()
 # Destination options (no APIs, keep simple)
 presets = {
     "White House": (38.8977, -77.0365),
+    "U.S. Capitol Building": (38.8899, -77.0091),
     "Union Station": (38.8970, -77.0064),
-    "Capitol Building": (38.8899, -77.0091),
+    "Washington Monument": (38.8895, -77.0353),
+    "Lincoln Memorial": (38.8893, -77.0502),
+    "Jefferson Memorial": (38.8814, -77.0365),
+    "Capitol One Arena": (38.8981, -77.0209),
+    "Smithsonian National Air and Space Museum": (38.8882, -77.0199),
+    "Smithsonian National Museum of Natural History": (38.8913, -77.0261),
+    "Smithsonian National Museum of American History": (38.8913, -77.0300),
+    "Smithsonian National Gallery of Art": (38.8913, -77.0199),
+    "Smithsonian National Museum of African American History and Culture": (38.8910, -77.0325),
+    "Library of Congress": (38.8887, -77.0047),
+    "Supreme Court of the United States": (38.8906, -77.0044),
+    "FBI Headquarters": (38.8954, -77.0260),
     "Custom": None,
 }
+
+presets_metro_dc = {
+    "Metro Center": (38.8983, -77.0281),
+    "L'Enfant Plaza": (38.8848, -77.0210),
+    "Smithsonian": (38.8887, -77.0281),
+    "Gallery Place–Chinatown": (38.8974, -77.0219),
+    "Dupont Circle": (38.9096, -77.0434),
+    "U Street": (38.9151, -77.0219),
+    "Union Station": (38.8970, -77.0064),
+    "Woodley Park–Zoo/Adams Morgan": (38.9249, -77.0528),
+    "Columbia Heights": (38.9283, -77.0281),
+    "Judiciary Square": (38.9004, -77.0220),
+    "Farragut North": (38.9031, -77.0397),
+    "Farragut West": (38.9031, -77.0392),
+    "Federal Triangle": (38.8940, -77.0295),
+    "Shaw–Howard U": (38.9155, -77.0210),
+    "Archives–Navy Memorial–Penn Quarter": (38.8920, -77.0247),
+    "Mount Vernon Square": (38.9052, -77.0235),
+    "NoMa–Gallaudet U": (38.9082, -77.0039),
+    "Rhode Island Ave–Brentwood": (38.9213, -76.9951),
+    "Fort Totten": (38.9484, -77.0038),
+    "Takoma": (38.9754, -77.0177),
+    "Cleveland Park": (38.9341, -77.0636),
+    "Tenleytown–AU": (38.9413, -77.0849),
+    "Friendship Heights": (38.9609, -77.0849),
+    "Van Ness–UDC": (38.9338, -77.0741),
+    "Foggy Bottom–GWU": (38.9007, -77.0507),
+    "McPherson Square": (38.9019, -77.0370),
+    "Custom": None,
+}
+
+
+
 dest_name = st.sidebar.selectbox("Destination", list(presets.keys()), index=0)
 
 if presets[dest_name] is None:

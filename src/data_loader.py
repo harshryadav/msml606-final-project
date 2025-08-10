@@ -43,8 +43,17 @@ def read_listings(uploaded_df: pd.DataFrame | None) -> pd.DataFrame:
         else:
             df["rating"] = rsr
 
+    # added in a filter to remove all listings that have not been reviewed in the past year
+    # assumed ot be bad listings host won't
+    df = df[df['number_of_reviews_ltm'] >= 1]
+
+
     keep = ["id", "name", "latitude", "longitude", "price_num", "rating"]
     df = df[[c for c in keep if c in df.columns]].dropna(subset=["latitude", "longitude", "price_num", "rating"])
+
+    # removed any places costing more than $10,000 (completely unrealistic)
+    df = df[df['price_num'] <= 10000]
+
     return df.reset_index(drop=True)
 
 
