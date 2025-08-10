@@ -7,23 +7,29 @@ from src.data_loader import read_listings, read_crimes
 from src.crime import compute_crime_count_near_listings
 from src.scoring import compute_weighted_score
 
-"""Streamlit app for DC Airbnb MVP using small helpers from `src/`."""
 
 # ---------- UI ----------
-st.set_page_config(page_title="DC Airbnb MVP", layout="wide")
-st.title("Washington DC Airbnb — MVP Rental Filter & Ranking")
-st.caption("Streamlit app for DC Airbnb MVP using small helpers from `src/`.")
+st.set_page_config(page_title="DC Airbnb", layout="wide")
+st.title("Washington DC Airbnb — Rental Filter & Ranking")
+st.caption("Streamlit application for DC Airbnb Rental Filter & Ranking.")
 
 # Data source: upload or use data/listings.csv or sample
 uploaded_file = st.sidebar.file_uploader("Upload InsideAirbnb listings CSV (optional)", type=["csv"])
 df = read_listings(pd.read_csv(uploaded_file) if uploaded_file else None)
 crimes_df = read_crimes()
 
-# Destination options (no APIs, keep simple)
+# Common DC destination options
 presets = {
     "White House": (38.8977, -77.0365),
     "Union Station": (38.8970, -77.0064),
     "Capitol Building": (38.8899, -77.0091),
+    "Georgetown": (38.9072, -77.0470),
+    "Dupont Circle": (38.9099, -77.0469),
+    "Adams Morgan": (38.9192, -77.0469),
+    "Columbia Heights": (38.9249, -77.0469),
+    "U Street": (38.9192, -77.0469),
+    "Shaw": (38.9192, -77.0469),
+    "Logan Circle": (38.9192, -77.0469),
     "Custom": None,
 }
 dest_name = st.sidebar.selectbox("Destination", list(presets.keys()), index=0)
@@ -76,7 +82,7 @@ mask = (
 )
 filtered = df.loc[mask].copy()
 
-# Weights for ranking
+# get the weighted score for each listing
 st.sidebar.markdown("### Weights (sum normalized automatically)")
 w_price = st.sidebar.slider("Weight - Price (lower better)", 0.0, 1.0, 0.4, 0.05)
 w_rating = st.sidebar.slider("Weight - Rating (higher better)", 0.0, 1.0, 0.4, 0.05)
@@ -87,9 +93,10 @@ if filtered.empty:
     st.warning("No listings match the selected filters. Try widening price range, lowering minimum rating, increasing max distance, or raising max crimes.")
     st.stop()
 
-# Score + sort (with optional algorithm choices)
+# use the weighted score to rank the listings
 filtered["score"] = compute_weighted_score(filtered, (w_price, w_rating, w_distance))
 
+# sort the listings using different algorithms
 algo = st.sidebar.selectbox(
     "Ranking algorithm",
     ["Pandas sort (default)", "Top-K via heap", "QuickSort", "HeapSort"],
@@ -131,7 +138,7 @@ st.dataframe(
 )
 
 # Map
-st.subheader("Map")
+st.subheader("Airbnb Rental Map")
 layer = pdk.Layer(
     "ScatterplotLayer",
     data=filtered.assign(size=100, color=((1 - normalize_series(filtered["score"], True)) * 255)).rename(columns={"longitude": "lon"}),
