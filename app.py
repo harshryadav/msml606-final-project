@@ -81,17 +81,20 @@ df["distance_km"] = [
 ]
 
 # Crime radius and counts (simple array approach)
-radius_km = st.sidebar.slider("Crime radius (km)", min_value=0.2, max_value=2.0, value=0.5, step=0.1)
+# Default Value set to .4 to reflect research
+# https://crim.sas.upenn.edu/sites/default/files/Ridgeway_Effect%20of%20Emergency%20Shelters-v5_1.2.2018.pdf
+radius_km = st.sidebar.slider("Crime radius (km)", min_value=0.2, max_value=2.0, value=0.4, step=0.1)
 crime_counts = compute_crime_count_near_listings(df, crimes_df, radius_km)
 df["crime_count"] = crime_counts
 
 # Basic filters with permissive defaults
 min_price, max_price = float(df["price_num"].min()), float(df["price_num"].max())
+average_price = float(df["price_num"].mean())
 price_range = st.sidebar.slider(
     "Price range ($)",
     min_value=int(min_price),
     max_value=int(max_price),
-    value=(int(min_price), int(max_price)),
+    value=(int(min_price), int(average_price)+100),
 )
 min_rating = st.sidebar.slider("Minimum rating", min_value=0.0, max_value=5.0, value=0.0, step=0.1)
 max_crimes = st.sidebar.slider(
@@ -176,7 +179,7 @@ else:
 # Results table
 st.subheader("Top Results")
 st.dataframe(
-    filtered[["id", "name", "price_num", "rating", "distance_km", "crime_count", "score"]].round({"price_num": 0, "rating": 2, "distance_km": 2, "score": 3}),
+    filtered[["score", "name", "listing_url", "price_num", "rating", "distance_km", "crime_count"]].round({"price_num": 0, "rating": 2, "distance_km": 2, "score": 3}),
     use_container_width=True,
     hide_index=True,
 )
