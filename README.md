@@ -3,12 +3,12 @@
 This is project explore Washington DC Airbnb listings, filter by price/rating/distance and neighborhood safety, and rank results using a simple weighted score. The app runs locally with Streamlit to help visualize the data and results.
 
 ## What it does
-- Upload or use a sample listings CSV
+- Uses DC listings and crimes data (CSV)
 - Choose a destination (e.g., White House)
 - Filter by price, rating, and max distance
 - Adjust weights for price/rating/distance to rank listings
 - Choose a simple algorithm for ranking:
-  - **Top-K via heap** (min-heap data structure)
+  - **Top-K** (uses min-heap data structure)
   - **HeapSort** (descending by score)
 - View results on a table and a map, download the CSV
 

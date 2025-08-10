@@ -8,17 +8,20 @@ from src.features.safety import compute_crime_count_near_listings
 from src.scoring import compute_weighted_score
 
 
-# ---------- UI ----------
+# Streamlit UI configurations
 st.set_page_config(page_title="DC Airbnb", layout="wide")
 st.title("Washington DC Airbnb — Rental Filter & Ranking")
 st.caption("Streamlit application for DC Airbnb Rental Filter & Ranking.")
 
-# Data source: upload or use data/listings.csv or sample
-uploaded_file = st.sidebar.file_uploader("Upload InsideAirbnb listings CSV (optional)", type=["csv"])
-df = read_listings(pd.read_csv(uploaded_file) if uploaded_file else None)
-crimes_df = read_crimes()
+# load in dataset
+try :
+    df = read_listings(pd.read_csv("./data/dc-listings.csv"))
+    crimes_df = read_crimes("./data/dc-crimes.csv")
+except FileNotFoundError:
+    st.error("Data files not found. Please ensure 'data/listings.csv' and 'data/crimes.csv' exist.")
+    st.stop()
 
-# Common DC destination options
+# common DC destination options
 presets = {
     "White House": (38.8977, -77.0365),
     "U.S. Capitol Building": (38.8899, -77.0091),
@@ -83,7 +86,7 @@ df["distance_km"] = [
 ]
 
 # Crime radius and counts (simple array approach)
-# Default Value set to .4 to reflect research
+# Default Value set to 0.4 to reflect research
 # https://crim.sas.upenn.edu/sites/default/files/Ridgeway_Effect%20of%20Emergency%20Shelters-v5_1.2.2018.pdf
 radius_km = st.sidebar.slider("Crime radius (km)", min_value=0.2, max_value=2.0, value=0.4, step=0.1)
 crime_counts = compute_crime_count_near_listings(df, crimes_df, radius_km)
@@ -98,9 +101,13 @@ price_range = st.sidebar.slider(
     max_value=int(max_price),
     value=(int(min_price), int(average_price)+100),
 )
+
+# minimum rating and nights
 min_rating = st.sidebar.slider("Minimum rating", min_value=0.0, max_value=5.0, value=0.0, step=0.1)
 min_nights, max_nights = int(df["minimum_nights"].min()), int(df["minimum_nights"].max())
 nights = st.sidebar.slider("Number of nights", min_value=min_nights, max_value=max_nights, value=1, step=1)
+
+# these set the ranges for the filters
 max_crimes = st.sidebar.slider(
     "Max crimes in radius",
     min_value=int(df["crime_count"].min()),
@@ -145,7 +152,9 @@ algo = st.sidebar.selectbox(
     index=0,
 )
 
-# Represent as list of (score, index) pairs
+# list of (score, index) pairs used for sorting and ranking:
+#  - score = weighted score 
+#  - index = original index in the DataFrame
 pairs = [(float(s), int(i)) for i, s in zip(filtered.index, filtered["score"]) ]
 if algo == "Top-K via heap":
     from src.algorithms.heap_topk import top_k_by_score
@@ -162,7 +171,7 @@ elif algo == "HeapSort":
     idx = [i for _, i in sorted_pairs]
     filtered = filtered.loc[idx]
 
-# Results table
+# Results Table
 st.subheader("Top Results")
 st.dataframe(
     filtered[["score", "name", "listing_url", "price_num", "rating", "distance_km", "crime_count", "minimum_nights", "maximum_nights"]].round({"price_num": 0, "rating": 2, "distance_km": 2, "score": 3}),
@@ -170,7 +179,7 @@ st.dataframe(
     hide_index=True,
 )
 
-# Map
+# DC Map
 st.subheader("Airbnb Rental Map")
 layer = pdk.Layer(
     "ScatterplotLayer",
@@ -183,6 +192,6 @@ layer = pdk.Layer(
 view_state = pdk.ViewState(latitude=float(filtered["latitude"].mean()), longitude=float(filtered["longitude"].mean()), zoom=11)
 st.pydeck_chart(pdk.Deck(layers=[layer], initial_view_state=view_state, tooltip={"text": "{name}\nScore: {score}"}))
 
-# Download
+# Download CSV Button
 st.download_button("Download CSV", data=filtered.to_csv(index=False), file_name="ranked_listings.csv", mime="text/csv")
 
