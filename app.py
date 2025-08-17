@@ -128,6 +128,8 @@ mask = (
     & (df["rating"] >= min_rating)
     & (df["distance_km"] <= max_distance)
     & (df["crime_count"] <= max_crimes)
+    & (df["minimum_nights"] <= nights)
+    & (df["maximum_nights"] >= nights)
 )
 filtered = df.loc[mask].copy()
 
