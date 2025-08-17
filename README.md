@@ -107,3 +107,8 @@ streamlit run app.py
 ![Airbnb Table](src/pictures/Table.png)
 ![Airbnb DC Map](src/pictures/Map.png)
 
+
+## Analysis
+You can analyze how the two algorithms perform using `analysis.py` found inside of `src/performance`. Running this will generate two plots stored inside of `performance`; one for the runtime and another for the number of comparisons of Top-K vs Heapsort. Below is from an example run:
+
+![Performance Analysis](src/performance/performance_analysis.png)
