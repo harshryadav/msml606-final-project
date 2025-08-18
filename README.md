@@ -23,7 +23,7 @@ If present, the app will automatically use `data/dc-listings.csv` and `data/dc-c
 ## Project structure
 ```
 msml606-final-project/
-  app.py                  # Streamlit app
+  app.py                  # Streamlit app (entry point)
   requirements.txt        # dependencies to run application
   data/
     dc-listings.csv       # InsideAirbnb DC dataset
@@ -41,6 +41,8 @@ msml606-final-project/
       __init__.py
       heap_topk.py        # Top-K using a min-heap
       sorting.py          # HeapSort
+    performance/
+      analysis.py         # run performance analysis on DC listing dataset
     pictures/
       Table.png           # Table visual from Streamlit UI
       Map.png             # DC Map visual from Streamlit UI
